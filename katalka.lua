@@ -1,36 +1,3 @@
-local function getPlayers()
-    local players = {}
-
-    for i = 0, 31 do
-        if NetworkIsPlayerActive(i) then
-            table.insert(players, i)
-        end
-    end
-
-    return players
-end
-
-local function GetClosestPlayer()
-	local players = getPlayers()
-	local closestDistance = -1
-	local closestPlayer = -1
-	local ply = PlayerPedId()
-	local plyCoords = GetEntityCoords(ply, 0)
-	
-	for index,value in ipairs(players) do
-		local target = GetPlayerPed(value)
-		if(target ~= ply) then
-			local targetCoords = GetEntityCoords(GetPlayerPed(value), 0)
-			local distance = Vdist(targetCoords["x"], targetCoords["y"], targetCoords["z"], plyCoords["x"], plyCoords["y"], plyCoords["z"])
-			if(closestDistance == -1 or closestDistance > distance) then
-				closestPlayer = value
-				closestDistance = distance
-			end
-		end
-	end
-	
-	return closestPlayer, closestDistance
-end
 
 local function LoadModel(model)
 	while not HasModelLoaded(model) do
@@ -39,13 +6,6 @@ local function LoadModel(model)
 		Citizen.Wait(10)
 	end
 end
-
-local function notify(msg)
-	SetNotificationTextEntry("STRING")
-	AddTextComponentString(msg)
-	DrawNotification(true, false)
-  end
-
 
 local function loadanim(dict)
 	while not HasAnimDictLoaded(dict) do
@@ -65,7 +25,7 @@ Citizen.CreateThread(function()
 		local closestObject = GetClosestObjectOfType(pedCoords, 3.0, GetHashKey("prop_ld_binbag_01"), false)
 		if DoesEntityExist(closestObject) then
 			local wheelChairCoords = GetEntityCoords(closestObject)
-			local pickupCoords = (wheelChairCoords)
+			local pickupCoords = wheelChairCoords
 				if GetDistanceBetweenCoords(pedCoords, pickupCoords, true) <= 3.0 then
 					drawTxt("~g~E~s~ взять ~o~G~s~ лечь ~r~X~w~ отпустить",0,1,0.5,0.95,0.6,255,255,255,255)
 					if IsControlJustPressed(0, 38) then
@@ -81,13 +41,6 @@ Citizen.CreateThread(function()
 
 
 function pickup(wheelchairObject)
-	local closestPlayer, closestPlayerDist = GetClosestPlayer()
-	if closestPlayer ~= nil and closestPlayerDist <= 1.5 then
-		if IsEntityPlayingAnim(GetPlayerPed(closestPlayer), 'anim@mp_ferris_wheel', 'idle_a_player_one', 3) then
-			notify("~r~Кто то уже держит каталку")
-			return
-		end
-	end
 	NetworkRequestControlOfEntity(wheelchairObject)
 	loadanim("anim@mp_ferris_wheel")
 	AttachEntityToEntity(wheelchairObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(),  28422), 0.9, 0.3, -1.1, 183.0, 183.0, 180.0, 0.0, false, false, true, false, 2, true)
@@ -109,14 +62,6 @@ end
 
 
 function Sit(wheelchairObject)
-	local closestPlayer, closestPlayerDist = GetClosestPlayer()
-
-	if closestPlayer ~= nil and closestPlayerDist <= 1.5 then
-		if IsEntityPlayingAnim(GetPlayerPed(closestPlayer), 'anim@gangops@morgue@table@', 'ko_front', 3) then
-			ShowNotification("~r~Кто-то уже лежит")
-			return
-		end
-	end
 
 	loadanim("anim@gangops@morgue@table@")
 
@@ -174,6 +119,3 @@ function drawTxt(text,font,centre,x,y,scale,r,g,b,a)
 	AddTextComponentString(text)
 	DrawText(x , y)
 end
-
-
-
