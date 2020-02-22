@@ -77,21 +77,19 @@ Citizen.CreateThread(function()
 		local ped = PlayerPedId()
 		local pedCoords = GetEntityCoords(ped)
 		local closestObject = GetClosestObjectOfType(pedCoords, 3.0, GetHashKey("prop_ld_binbag_01"), false)
-		if DoesEntityExist(closestObject) then
-			local wheelChairCoords = GetEntityCoords(closestObject)
-			local pickupCoords = wheelChairCoords
-				if GetDistanceBetweenCoords(pedCoords, pickupCoords, true) <= 3.0 then
-					drawTxt("~g~E~s~ взять ~o~G~s~ лечь ~r~X~w~ отпустить",0,1,0.5,0.95,0.6,255,255,255,255)
-					if IsControlJustPressed(0, 38) then
-						pickup(closestObject)
-					end
-						if IsControlJustPressed(0, 47) then
-							Sit(closestObject)
-						end
-					end
-				end
+		local wheelChairCoords = GetEntityCoords(closestObject)
+		local pickupCoords = wheelChairCoords
+		if GetDistanceBetweenCoords(pedCoords, pickupCoords, true) <= 3.0 then
+			drawTxt("~g~E~s~ взять ~o~G~s~ лечь ~r~X~w~ отпустить",0,1,0.5,0.95,0.6,255,255,255,255)
+			if IsControlJustPressed(0, 38) then
+				pickup(closestObject)
 			end
-		end)
+			if IsControlJustPressed(0, 47) then
+				Sit(closestObject)
+			end
+		end
+	end
+end)
 
 
 
